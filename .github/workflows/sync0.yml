@@ -1,0 +1,32 @@
+name: Force Sync Upstream
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Force Sync
+        run: |
+          git config --global user.name github-actions
+          git config --global user.email github-actions@github.com
+
+          git remote add upstream https://github.com/maillab/cloud-mail.git
+
+          git fetch upstream
+
+          git checkout main
+
+          git reset --hard upstream/main
+
+          git push origin main --force
